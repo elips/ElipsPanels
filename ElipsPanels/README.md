@@ -23,6 +23,16 @@ A list of things to go after, each with a short note on how to get it, so there'
 - **The panel on screen**: the first few things still to get and how far along each is. It hides itself when there's nothing left. Click its header to fold it, right-click the header for the list window.
 - **Speaking up**: a line in chat and a notice on screen when an item on your list comes up for a roll or lies in a loot window, and "Chase complete" when one is done; items on the list are marked in their tooltips. Each can be switched off.
 
+## Group mana and raid cooldowns
+
+Two panels for a party or raid; each can be set to parties and raids, or raids only.
+
+- **Group mana**: a line for each healer and each Mage in your group: their name and their mana as a percent, colored from full (blue) through half (yellow) to nearly empty (red), with a small icon beside anyone getting mana back (drinking, Innervate, Evocation, Mana Tide). Healers are those with the Healer role; where nobody has a role, the healing classes stand in. This panel stays up in a fight (it's for the fight).
+- **Raid cooldowns**: a line for each watched cooldown someone in your group can have (Rebirth, Reincarnation, Lay on Hands, Divine Intervention, Soulstone, Innervate, and more you can tick): who has it ready, and how long until the others' are back. A use is seen when the game says who cast what; a cooldown nobody was seen using counts as ready. Shift-click a line to tell your group.
+- Both: click the header to fold, drag it to move, mouse wheel to scroll. `/ep group test` shows both with a made-up raid for a minute, to see and place them.
+
+The game hides other players' mana and buffs from addons in a fight; the panels hand the hidden values straight to the game's own widgets, so the percents and colors still show.
+
 ## All panels
 
 - **Fade away in a fight**: in combat the panels fade out, and come back while the mouse is over where they sit. It can be switched off.
@@ -37,6 +47,7 @@ A list of things to go after, each with a short note on how to get it, so there'
 | `/ep move` | Shows or puts away the boxes for moving the panels |
 | `/ep info` | Shows or hides the information bar |
 | `/ep chase` | Opens the chase list window. `/ep chase add [item link]`, an item ID, a reputation's name, `quest 1234` or any goal adds to it (a note after " - "); `/ep chase show` and `/ep chase hide` for the panel on screen |
+| `/ep group test` | Both group panels with a made-up raid for a minute (`/ep group reset`: forget the cooldowns seen) |
 | `/ep status` | How each panel stands |
 
 ## Coming from ArchDruid
@@ -52,4 +63,5 @@ These panels were part of ArchDruid. The first time each runs here, the settings
 | `FromArchDruid.lua` | Brings settings over from ArchDruid, once. The only file that knows of ArchDruid |
 | `Info.lua` | The information bar |
 | `Chase.lua` | The chase list |
+| `Group.lua` | Group mana and raid cooldowns |
 | `Options.lua` | The settings window |

@@ -121,7 +121,7 @@ ns.panelSwitches[#ns.panelSwitches + 1] = { "Information bar",
     end,
     "A thin bar at the top of the screen with the things worth a glance. Same as /ep info." }
 
-ns.AddTab("info", "Information bar", function(page, x, y)
+ns.AddTab("info", "Info bar", function(page, x, y)
     local info = ns.InfoSettings()
     y = K.Para(page, "A thin bar, centered at the top of the screen to start with: the time, latency, frames per second, experience and gold per hour, what the addons take of each frame and of memory, your most worn piece of gear, free bag slots and the currencies you tick.", x, y, 430)
     y = y - 4
@@ -148,7 +148,7 @@ ns.panelSwitches[#ns.panelSwitches + 1] = { "Chase panel",
     end,
     "A small panel with the first few things still to get from your chase list, and how far along each is. It hides itself when there's nothing left. Same as /ep chase show and /ep chase hide." }
 
-ns.AddTab("chase", "Chase list", function(page, x, y)
+ns.AddTab("chase", "Chase", function(page, x, y)
     local chase = ns.ChaseSettings()
     local function Apply()
         ns.RefreshChase()
@@ -192,4 +192,93 @@ ns.AddTab("chase", "Chase list", function(page, x, y)
         function() return chase.tooltip ~= false end,
         function(checked) chase.tooltip = checked end,
         "An item's tooltip says \"On your chase list\", with your note on how to get it.")
+end)
+
+------------------------------------------------------------------------------
+-- Group mana, raid cooldowns
+------------------------------------------------------------------------------
+
+ns.panelSwitches[#ns.panelSwitches + 1] = { "Group mana",
+    function() return ns.GroupSettings().mana.show ~= false end,
+    function(checked)
+        ns.GroupSettings().mana.show = checked
+        ns.RefreshGroupPanels()
+    end,
+    "In a party or raid: each healer's and each Mage's mana as a percent, with an icon beside anyone getting mana back." }
+ns.panelSwitches[#ns.panelSwitches + 1] = { "Raid cooldowns",
+    function() return ns.GroupSettings().cooldowns.show ~= false end,
+    function(checked)
+        ns.GroupSettings().cooldowns.show = checked
+        ns.RefreshGroupPanels()
+    end,
+    "In a party or raid: who has Rebirth, Reincarnation, Lay on Hands and the like ready, and how long until the others' are back." }
+
+local WHERE = { { "group", "Parties and raids" }, { "raid", "Raids only" } }
+
+ns.AddTab("mana", "Mana", function(page, x, y)
+    local group = ns.GroupSettings()
+    local mana = group.mana
+    local function Apply()
+        ns.RefreshGroupPanels()
+    end
+    y = K.Para(page, "Each healer's and each Mage's mana as a percent, colored from full (blue) through half (yellow) to nearly empty (red), with a small icon beside the name of anyone getting mana back: drinking, Innervate, Evocation, Mana Tide. Healers are those with the Healer role; where nobody has a role, the healing classes stand in.", x, y, 430)
+    y = y - 4
+    y = K.Para(page, "Click the panel's header to fold it, drag the header to move it; the mouse wheel scrolls a list longer than the rows shown.", x, y, 430)
+    y = y - 6
+    K.Check(page, "Include yourself", x, y,
+        function() return mana.self == true end,
+        function(checked) mana.self = checked Apply() end,
+        "On: you get a row too, when you're a healer.")
+    y = y - 28
+    Choice(page, "Show it in", x, y, WHERE,
+        function() return mana.where or "group" end,
+        function(value) mana.where = value Apply() end)
+    y = y - 28
+    K.Stepper(page, "Rows shown", x, y,
+        function() return mana.rows or 8 end,
+        function(value) mana.rows = value Apply() end, 1, 3, 15,
+        function(value) return string.format("%d", value) end)
+    y = y - 34
+    K.Check(page, "Lock the group panels in place", x, y,
+        function() return group.locked == true end,
+        function(checked) group.locked = checked end,
+        "On: dragging doesn't move the group mana or the raid cooldowns panel.")
+    y = y - 32
+    K.Button(page, "Show a made-up raid", 150, x, y, function()
+        ns.GroupCommand("test")
+    end, "Both group panels with a made-up raid for a minute, to see them and place them (same as /ep group test). Click again to stop.")
+end)
+
+ns.AddTab("cooldowns", "Cooldowns", function(page, x, y)
+    local group = ns.GroupSettings()
+    local cooldowns = group.cooldowns
+    local function Apply()
+        ns.RefreshGroupPanels()
+    end
+    y = K.Para(page, "Who has each of these ready, and how long until the others' are back. A use is seen when the game says who cast what; a cooldown nobody was seen using counts as ready. Shift-click a line on the panel to tell your group.", x, y, 430)
+    y = y - 6
+    Choice(page, "Show it in", x, y, WHERE,
+        function() return cooldowns.where or "group" end,
+        function(value) cooldowns.where = value Apply() end)
+    y = y - 30
+    -- The cooldowns watched, in two columns.
+    local list = ns.GroupCooldownList()
+    local half = math.ceil(#list / 2)
+    for index, entry in ipairs(list) do
+        local column, line = (index > half) and 1 or 0, (index - 1) % half
+        K.Check(page, entry.label, x + column * 220, y - line * 22,
+            function()
+                local chosen = cooldowns.spells[entry.key]
+                if chosen == nil then
+                    return entry.on == true
+                end
+                return chosen == true
+            end,
+            function(checked) cooldowns.spells[entry.key] = checked Apply() end,
+            entry.talent and "A talent: only those seen using it are listed." or nil)
+    end
+    y = y - half * 22 - 10
+    K.Button(page, "Forget cooldowns seen", 160, x, y, function()
+        ns.GroupCommand("reset")
+    end, "Every cooldown counts as ready again (same as /ep group reset).")
 end)

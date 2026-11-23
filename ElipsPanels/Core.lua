@@ -7,6 +7,9 @@
 --   Chase list        things to go after (items, reputations, quests,
 --                     goals of your own), each with a note on how to get
 --                     it (Chase.lua)
+--   Group mana        each healer's and each Mage's mana, as a percent
+--   Raid cooldowns    who has Rebirth, Reincarnation, Lay on Hands and the
+--                     like ready, and when the others' are back (Group.lua)
 --
 -- This file: the settings, the few helpers the panels share (the panels'
 -- look, fading away in a fight, moving them), and the slash command.
@@ -59,6 +62,13 @@ ns.DEFAULTS = {
     -- `lists`; the panel on screen (`show`, `hideInCombat`, `rows`), and
     -- whether it speaks up (`alerts`, `sound`, `tooltip`).
     chase = { show = true, hideInCombat = true, rows = 6, alerts = true, sound = true, tooltip = true },
+    -- The group panels (Group.lua): the healers' and Mages' mana, and the
+    -- raid's cooldowns. `where`: "group" (parties and raids) or "raid".
+    -- `spells`: a cooldown's key -> watched or not (unset: its own default).
+    -- `used` and `seen`: the cooldowns seen used, by player (kept by wall
+    -- clock, so a reload doesn't forget them).
+    group = { mana = { show = true, where = "group", rows = 8, self = false },
+        cooldowns = { show = true, where = "group", rows = 8, spells = {} }, used = {}, seen = {} },
 }
 
 function ns.ModuleOn(key)
@@ -349,6 +359,41 @@ function W.TextBox(parent, name, hintText, width)
     return box
 end
 
+-- One line to your group: instance chat, raid chat or party chat,
+-- whichever you're in.
+local CHAT_LIMIT = 250
+function ns.SendGroupLine(text)
+    local chatType
+    local instance = rawget(_G, "LE_PARTY_CATEGORY_INSTANCE")
+    if instance and IsInGroup and ns.Bool(IsInGroup(instance)) then
+        chatType = "INSTANCE_CHAT"
+    elseif IsInRaid and IsInRaid() then
+        chatType = "RAID"
+    elseif IsInGroup and IsInGroup() then
+        chatType = "PARTY"
+    end
+    if not chatType then
+        ns.Print("you're not in a group.")
+        return false
+    end
+    local chat = rawget(_G, "C_ChatInfo")
+    if chat and chat.InChatMessagingLockdown then
+        local ok, locked = pcall(chat.InChatMessagingLockdown)
+        if ok and ns.Bool(locked) then
+            ns.Print("chat is locked right now (during a boss fight); try again after it.")
+            return false
+        end
+    end
+    if #text > CHAT_LIMIT then
+        text = text:sub(1, CHAT_LIMIT - 3) .. "..."
+    end
+    local send = (chat and chat.SendChatMessage) or rawget(_G, "SendChatMessage")
+    if not send then
+        return false
+    end
+    return (pcall(send, text, chatType))
+end
+
 ------------------------------------------------------------------------------
 -- Moving the panels
 ------------------------------------------------------------------------------
@@ -541,7 +586,7 @@ SlashCmdList["ELIPSPANELS"] = function(message)
     elseif ns.commands[command] then
         ns.commands[command](rest)
     elseif command == "help" or command == "?" then
-        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep status: how each panel stands.")
+        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep status: how each panel stands.")
     else
         ns.ToggleOptions()
     end

@@ -38,6 +38,21 @@ ns.CARRY = {
         end
         return true
     end, "chase list" },
+    -- (With the cooldowns seen used, so nothing counts as ready that isn't.)
+    { "group", function(old, db)
+        if type(old.group) ~= "table" then
+            return false
+        end
+        db.group = Copy(old.group)
+        if type(old.modules) == "table" and old.modules.group == false then
+            -- (They were switched off there as a whole.)
+            for _, part in ipairs({ "mana", "cooldowns" }) do
+                db.group[part] = type(db.group[part]) == "table" and db.group[part] or {}
+                db.group[part].show = false
+            end
+        end
+        return true
+    end, "group panel" },
     { "quiet", function(old, db)
         if type(old.quietPanels) ~= "boolean" then
             return false
