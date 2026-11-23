@@ -100,6 +100,14 @@ ns.AddTab("general", "General", function(page, x, y)
             ns.W.ApplyQuiet()
         end,
         "In combat the panels fade out, and come back while the mouse is over where they sit. Out of combat they're as they were.")
+    y = y - 24
+    K.Check(page, "Hide in battlegrounds", x, y,
+        function() return db.hideInBattlegrounds ~= false end,
+        function(checked)
+            db.hideInBattlegrounds = checked
+            ns.ApplyBattlegrounds()
+        end,
+        "Inside a battleground none of the panels show: the information bar, the chase list, group mana and raid cooldowns. They come back when you leave.")
     y = y - 30
     K.Button(page, "Move the panels", 130, x, y, function()
         local on = ns.Move()

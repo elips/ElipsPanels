@@ -437,7 +437,7 @@ end
 -- Is this panel wanted where you are? `where`: "group" (a party or a raid)
 -- or "raid" (raids only).
 local function Wanted(settings)
-    if settings.show == false then
+    if settings.show == false or ns.PanelsHidden() then
         return false
     end
     local kind = Grouped()
@@ -1366,6 +1366,9 @@ ns.Hook("INIT", function()
     if not Enabled() then
         return
     end
+    ns.Hook("BATTLEGROUND", function()
+        Dirty()
+    end)
     EnsurePanels()
     -- Cooldowns that came back while you were away.
     local now = time()

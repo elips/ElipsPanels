@@ -908,7 +908,7 @@ local function DrawPanel(open, done)
         return
     end
     local settings = Settings()
-    local hidden = settings.show == false or #open == 0
+    local hidden = settings.show == false or #open == 0 or ns.PanelsHidden()
         or (settings.hideInCombat ~= false and (fighting or InCombatLockdown()) and not W.QuietOn())
     if hidden then
         panel:Hide()
@@ -1501,6 +1501,9 @@ ns.Hook("INIT", function()
     end
     ns.Hook("COMBAT", function(inCombat)
         fighting = inCombat and true or false
+        Refresh()
+    end)
+    ns.Hook("BATTLEGROUND", function()
         Refresh()
     end)
     -- Another addon loading may bring loot tables: read them again when next asked.

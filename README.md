@@ -44,6 +44,7 @@ The game hides other players' mana and buffs from addons in a fight; the panels 
 ## All panels
 
 - **Fade away in a fight**: in combat the panels fade out, and come back while the mouse is over where they sit. It can be switched off.
+- **Hide in battlegrounds**: inside a battleground none of the panels show; they come back when you leave. It can be switched off (General).
 - **Moving**: `/ep move` (or Move the panels in the settings) puts a blue box where each panel sits. Drag one and its panel goes there; right-click a box to put its panel back where it started. While you drag, a box lines up with the middle of the screen and with the suite's other frames (a green line shows what it lined up with); hold Shift to place it freely. The boxes are put away in a fight.
 - **Look**: dark, rounded panels with a thin edge of weathered bronze. The accent (the line along a panel's foot, ticks) is antique gold. With ElipsUI installed and a class HUD running, the accent takes the HUD's theme color and the panels get ElipsUI's gloss along the top; ElipsUI's "Gloss on panels" switches the gloss off for the whole suite.
 

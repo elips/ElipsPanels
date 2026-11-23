@@ -583,7 +583,7 @@ end
 
 local function Apply()
     local settings = Settings()
-    if settings.show == false then
+    if settings.show == false or ns.PanelsHidden() then
         if panel then
             panel:Hide()
         end
@@ -914,6 +914,9 @@ end
 
 ns.Hook("INIT", function()
     Settings()
+    ns.Hook("BATTLEGROUND", function()
+        Apply()
+    end)
     ns.On("PLAYER_ENTERING_WORLD", function()
         if session.at == 0 then
             session.at = GetTime()

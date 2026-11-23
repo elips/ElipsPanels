@@ -55,6 +55,8 @@ ns.DEFAULTS = {
     modules = {},
     -- Panels fade away in combat and come back under the mouse.
     quietPanels = true,
+    -- No panel shows inside a battleground (/ep, General).
+    hideInBattlegrounds = true,
     -- The information bar (Info.lua): shown, its text size, what's on it
     -- (items[key] = false for a piece taken off), the currencies ticked.
     info = { show = true, size = 12, items = {}, currencies = {} },
@@ -538,6 +540,35 @@ K.On("PLAYER_REGEN_DISABLED", function()
     ns.inCombat = true
     ns.Fire("COMBAT", true)
 end)
+
+-- "Hide in battlegrounds": inside one, no panel shows. Each panel asks
+-- ns.PanelsHidden() when it decides whether to show, and looks again when
+-- told BATTLEGROUND (going in, coming out, or the setting changing).
+local inBattleground = false
+local function ReadPlace()
+    local fn = rawget(_G, "IsInInstance")
+    local kind
+    if fn then
+        local ok, _, instanceType = pcall(fn)
+        kind = ok and K.Str(instanceType) or nil
+    end
+    local now = kind == "pvp"
+    if now ~= inBattleground then
+        inBattleground = now
+        ns.Fire("BATTLEGROUND", now)
+    end
+end
+function ns.InBattleground()
+    return inBattleground
+end
+function ns.PanelsHidden()
+    return inBattleground and not (ns.db and ns.db.hideInBattlegrounds == false)
+end
+function ns.ApplyBattlegrounds()
+    ns.Fire("BATTLEGROUND", inBattleground)
+end
+K.On("PLAYER_ENTERING_WORLD", ReadPlace)
+K.On("ZONE_CHANGED_NEW_AREA", ReadPlace)
 K.On("PLAYER_REGEN_ENABLED", function()
     ns.inCombat = false
     ns.Fire("COMBAT", false)
@@ -547,7 +578,9 @@ end)
 ns.statusParts = {}
 function ns.StatusLines()
     local lines = { "ElipsPanels " .. tostring(ns.VERSION) .. " | accent: " .. (W.themeSource or "its own antique gold")
-        .. " | fading in a fight: " .. (W.QuietOn() and "on" or "off") }
+        .. " | fading in a fight: " .. (W.QuietOn() and "on" or "off")
+        .. " | hidden in battlegrounds: " .. (ns.db.hideInBattlegrounds == false and "off" or "on")
+        .. (ns.InBattleground() and " (in one now)" or "") }
     for _, part in ipairs(ns.statusParts) do
         local ok, text = pcall(part)
         if ok and type(text) == "table" then

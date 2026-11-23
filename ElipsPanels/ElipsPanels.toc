@@ -2,7 +2,7 @@
 ## Title: ElipsPanels
 ## Notes: The suite's small panels in one addon, each shown or hidden as you like: the information bar (time, latency, FPS, gold and XP per hour, durability, bags, currencies) the chase list (things to go after, with how to get each), group mana and raid cooldowns.
 ## Author: elips
-## Version: 1.3.0
+## Version: 1.4.0
 ## OptionalDeps: ElipsUI
 ## Category: Interface
 ## IconTexture: Interface\AddOns\ElipsPanels\Media\ElipsPanels
