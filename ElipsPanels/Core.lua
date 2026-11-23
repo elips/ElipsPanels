@@ -57,6 +57,10 @@ ns.DEFAULTS = {
     quietPanels = true,
     -- No panel shows inside a battleground (/ep, General).
     hideInBattlegrounds = true,
+    -- The threat panel above the target frame (Threat.lua): shown, its line
+    -- of threat and damage per second, and whether your threat is colored
+    -- as a tank's ("tank"), as anyone else's ("other"), or worked out ("auto").
+    threat = { show = true, tps = true, as = "auto" },
     -- The Rebuff List (Rebuff.lua): shown, its countdown (your buff with less
     -- than this many seconds left is listed again), whether you're checked
     -- for Thorns, Mark of the Wild (and Gift) on the list too, and the lines
@@ -624,7 +628,7 @@ SlashCmdList["ELIPSPANELS"] = function(message)
     elseif ns.commands[command] then
         ns.commands[command](rest)
     elseif command == "help" or command == "?" then
-        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep rebuff: the Rebuff List. /ep status: how each panel stands.")
+        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep rebuff: the Rebuff List. /ep threat: show or hide the threat panel. /ep status: how each panel stands.")
     else
         ns.ToggleOptions()
     end

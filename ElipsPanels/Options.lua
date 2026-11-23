@@ -42,7 +42,7 @@ local function Show(key)
 end
 
 local function Build()
-    window = K.Window("ElipsPanelsOptions", "ElipsPanels", 530, 440)
+    window = K.Window("ElipsPanelsOptions", "ElipsPanels", 600, 440)
     local x = 14
     for _, tab in ipairs(tabs) do
         local width = 26 + #tab.title * 7
@@ -398,5 +398,35 @@ ns.AddTab("rebuff", "Rebuff", function(page, x, y)
         ShowKey()
     end)
     page.body:HookScript("OnShow", ShowKey)
+end)
+
+------------------------------------------------------------------------------
+-- Threat panel
+------------------------------------------------------------------------------
+
+ns.panelSwitches[#ns.panelSwitches + 1] = { "Threat panel",
+    function() return ns.db.threat.show ~= false end,
+    function(checked)
+        ns.db.threat.show = checked
+        ns.RefreshThreat()
+    end,
+    "In a fight, above the target frame: your threat on your target, colored for whether you're tanking. Same as /ep threat." }
+
+local THREAT_AS = { { "auto", "Automatic" }, { "tank", "A tank" }, { "other", "A damage dealer or healer" } }
+
+ns.AddTab("threat", "Threat", function(page, x, y)
+    ns.db.threat = type(ns.db.threat) == "table" and ns.db.threat or {}
+    local threat = ns.db.threat
+    y = K.Para(page, "In a fight, your threat on your target shows above the target frame (100% means it's on you, or about to be). Tanking, it wears the nameplate threat colors: tanking, about to lose it, on another tank, on a damage dealer or healer. Otherwise it's green when you're well below, turning yellow, orange (\"Pulling aggro!\") and red, and once the mob is on you the number grows and pulses. In a group, while the mob is on you, it names who's next and how close. Switch it on or off on the General tab.", x, y, 540)
+    y = y - 4
+    Choice(page, "Color it as", x, y, THREAT_AS,
+        function() return threat.as or "auto" end,
+        function(value) threat.as = value ns.RefreshThreat() end,
+        "Automatic: a Druid in Bear Form and a Warrior in Defensive Stance count as tanking; any other class by its group role (tank, or main tank in a raid).")
+    y = y - 34
+    K.Check(page, "Threat and damage per second", x, y,
+        function() return threat.tps ~= false end,
+        function(checked) threat.tps = checked ns.RefreshThreat() end,
+        "A line above your threat: threat per second on the target (last 15 seconds, without what a taunt hands you) and damage per second (from the game's damage meter, when it can be read in combat). A Druid's shows in Cat and Bear Form only.")
 end)
 

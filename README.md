@@ -49,6 +49,18 @@ Who in your group needs the buffs you can cast, with a click (or one key) to cas
 - **Buff key**: one key for all your buffing (set it on the Rebuff tab, under Key Bindings > ElipsPanels, or with `/ep rebuff bind F`, any key, e.g. `SHIFT-B`; `/ep rebuff unbind` clears it). Each press, out of combat, casts the first buff of the list's marked row (the first one in range, marked with a soft wash and an edge on the left), and when the cast lands it moves on to the next one at once: Mark, then Thorns, then the next player. The key shows on the list's header. It works with the list turned off, does nothing in combat, and says so in chat when there's nothing to buff.
 - **Thorns warnings**: for the people who've worn your Thorns, a line in chat when it falls off ("Your Thorns fell off Morvessa."), when another druid's replaces it ("Leafy overwrote your Thorns on Morvessa."), and when someone wears a lower rank than you can cast ("Morvessa has Thorns rank 4. You can cast rank 6."). Once per change; the game hides buffs in combat, so what happens in a fight is told when it ends. In a group; a new zone starts watching afresh. Switch: "Thorns warnings in chat" on the Rebuff tab.
 
+## Threat panel
+
+In a fight, on a target you can attack, your threat on it shows above the target frame as a percentage (100% means it's on you, or about to be). For any class.
+
+- **Tanking**, it wears the four nameplate colors (tanking, about to lose it, on another tank, on a damage dealer or healer: green, orange, blue and red, or the ones set in ElipsUI when that's installed), with no words.
+- **Otherwise** it's green when you're well below, then yellow, orange ("Pulling aggro!"), and once the mob is on you the number turns red, grows and pulses with a red edge.
+- **In a group**, while the mob is on you, it also shows who's next and how close.
+- **"Color it as"** (Threat tab) says which of the two you are. Automatic: a Druid in Bear Form and a Warrior in Defensive Stance count as tanking; any other class by its group role (tank, or main tank in a raid). Or always a tank, or never.
+- **Threat and damage per second**: a line above your threat, "TPS | DPS". Threat per second is worked out from your threat on the target over the last 15 seconds, counting only threat you earn: what a taunt adds by lifting you to the top is left out (it starts over on a new target or when your threat drops). Damage per second comes from the game's own damage meter, when the game lets addons read it in combat. A Druid's line shows in Cat and Bear Form only. It can be switched off on the Threat tab.
+
+The panel isn't moved with the others: it sits on the target frame and goes where that goes. It follows "Hide in battlegrounds".
+
 ## All panels
 
 - **Fade away in a fight**: in combat the panels fade out, and come back while the mouse is over where they sit. It can be switched off.
@@ -66,6 +78,7 @@ Who in your group needs the buffs you can cast, with a click (or one key) to cas
 | `/ep chase` | Opens the chase list window. `/ep chase add [item link]`, an item ID, a reputation's name, `quest 1234` or any goal adds to it (a note after " - "); `/ep chase show` and `/ep chase hide` for the panel on screen |
 | `/ep group test` | Both group panels with a made-up raid for a minute (`/ep group reset`: forget the cooldowns seen) |
 | `/ep rebuff` | Shows or hides the Rebuff List (`test`, `test raid`: a made-up group; `watch`: pin your target for Thorns; `bind KEY`, `unbind`: the buff key) |
+| `/ep threat` | Shows or hides the threat panel |
 | `/ep status` | How each panel stands |
 
 ## Coming from ArchDruid
@@ -84,5 +97,6 @@ These panels were part of ArchDruid. The first time each runs here, the settings
 | `Chase.lua` | The chase list |
 | `Group.lua` | Group mana and raid cooldowns |
 | `Rebuff.lua` | The Rebuff List and its buff key |
+| `Threat.lua` | The threat panel above the target frame |
 | `Bindings.xml` | The buff key's place under Key Bindings |
 | `Options.lua` | The settings window |

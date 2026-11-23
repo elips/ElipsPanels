@@ -70,6 +70,24 @@ ns.CARRY = {
         end
         return true
     end, "Rebuff List" },
+    -- (The threat panel's two switches sat among ArchDruid's "show" settings.)
+    { "threat", function(old, db)
+        local show = old.show
+        if type(show) ~= "table" then
+            return false
+        end
+        db.threat = type(db.threat) == "table" and db.threat or {}
+        if type(show.threat) == "boolean" then
+            db.threat.show = show.threat
+        end
+        if type(show.threatTPS) == "boolean" then
+            db.threat.tps = show.threatTPS
+        end
+        if type(old.modules) == "table" and old.modules.threat == false then
+            db.threat.show = false   -- (it was switched off there as a whole)
+        end
+        return true
+    end, "threat panel" },
     { "quiet", function(old, db)
         if type(old.quietPanels) ~= "boolean" then
             return false
