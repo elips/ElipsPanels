@@ -6,7 +6,9 @@
 --   Latency         to the world server, in milliseconds
 --   FPS             frames per second
 --   XP per hour     this session (not shown at the level cap)
---   Gold per hour   this session: what you have now against what you had
+--   Gold per hour   this session: what you have now against what you had;
+--                   with Auctionator, plus what the things you looted are
+--                   worth at its latest prices (Worth.lua)
 --   Addon CPU       the share of each frame the addons take
 --   Memory          what the addons (and the game's own interface code)
 --                   hold together
@@ -190,7 +192,8 @@ local function ShowGold(text)
     if not money then
         return false
     end
-    local rate = PerHour(money - session.money)
+    -- Coin gained, and (with Auctionator) what the loot is worth.
+    local rate = PerHour(money - session.money + ns.LootEarnings())
     if not rate then
         text:SetFormattedText("-%s/h|r", LABEL)
         return true
@@ -612,6 +615,7 @@ function ns.InfoRestart()
     session.at = GetTime()
     session.money = MoneyNow() or 0
     session.xp = 0
+    ns.LootTallyRestart()
     if panel and panel:IsShown() then
         Tick()
     end
@@ -680,6 +684,16 @@ ShowTip = function()
     local money = MoneyNow()
     if money then
         tip:AddDoubleLine("Gold", string.format("%s (%s since)", Coins(money), Coins(money - session.money)), 0.8, 0.8, 0.8, 1, 1, 1)
+        if ns.PricesKnown() then
+            -- What gold per hour adds to the coin: the loot at Auctionator's prices.
+            local tally = ns.LootTally()
+            tip:AddDoubleLine("Loot", string.format("%s, %d %s at Auctionator's prices", Coins(tally.value), tally.items,
+                tally.items == 1 and "item" or "items"), 0.8, 0.8, 0.8, 1, 1, 1)
+            if tally.aside > 0 then
+                tip:AddDoubleLine("Not counted", string.format("%s from vendors and the mail", Coins(tally.aside)), 0.8, 0.8, 0.8, 1, 1, 1)
+            end
+            tip:AddDoubleLine("Earned", Coins(money - session.money + ns.LootEarnings()), 0.8, 0.8, 0.8, 1, 1, 1)
+        end
     end
     if not AtLevelCap() then
         local now, most = ns.Num(Call("UnitXP", "player")), ns.Num(Call("UnitXPMax", "player"))

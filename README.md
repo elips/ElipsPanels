@@ -14,6 +14,14 @@ A thin bar, centered at the top of the screen to start with, with the things wor
 
 Right-click the bar and a list opens under it: tick what it shows. Shift-click it to start the per-hour counts again. Point at it for the details (realm time, both latencies, the addons using the most memory, what the session has earned). The text size is in the settings.
 
+**Gold per hour, with Auctionator**: with Auctionator installed, gold per hour is the coin you've gained plus what the things you looted are worth at the prices from its latest scan. Without it, it's the coin alone.
+
+- Each item you loot counts at the price Auctionator last saw it listed for. What can't be auctioned (bind on pickup, quest items), greys, and anything with no auction price, or one below what a vendor pays, counts at the vendor's price.
+- Only loot counts: not a quest's reward, nor what you buy or make.
+- Coin that comes in while a vendor's window or the mailbox is open isn't added on top: those things were counted when you looted them. What you spend there (repairs, postage) still counts against you.
+- The figure is an estimate. A price is the lowest listing at your last scan, so it's as fresh as that scan, and one silly listing on a rarely traded item inflates it.
+- The bar's tooltip shows the loot's worth, the coin set aside, and the session's earnings. Shift-click the bar starts all of it again.
+
 ## Chase list
 
 A list of things to go after, each with a short note on how to get it, so there's always something to do. Each character has its own list.
@@ -61,6 +69,7 @@ These panels were part of ArchDruid. The first time each runs here, the settings
 | `Kit.lua` | The small toolkit shared by the suite's addons |
 | `Core.lua` | Settings, the panels' look, fading in a fight, moving, the slash command |
 | `FromArchDruid.lua` | Brings settings over from ArchDruid, once. The only file that knows of ArchDruid |
+| `Worth.lua` | What looted items are worth (Auctionator's prices), for gold per hour |
 | `Info.lua` | The information bar |
 | `Chase.lua` | The chase list |
 | `Group.lua` | Group mana and raid cooldowns |

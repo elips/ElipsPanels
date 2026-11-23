@@ -126,6 +126,8 @@ ns.AddTab("info", "Info bar", function(page, x, y)
     y = K.Para(page, "A thin bar, centered at the top of the screen to start with: the time, latency, frames per second, experience and gold per hour, what the addons take of each frame and of memory, your most worn piece of gear, free bag slots and the currencies you tick.", x, y, 430)
     y = y - 4
     y = K.Para(page, "Right-click the bar to choose what it shows, your currencies included. Shift-click it to start the per-hour counts again. Point at it for the details.", x, y, 430)
+    y = y - 4
+    y = K.Para(page, "With Auctionator installed, gold per hour is the coin you've gained plus what the things you looted are worth at the prices from its latest scan (the vendor's price for what can't be auctioned). Coin from a vendor or the mailbox isn't added on top.", x, y, 430)
     y = y - 8
     K.Stepper(page, "Text size", x, y,
         function() return tonumber(info.size) or 12 end,
