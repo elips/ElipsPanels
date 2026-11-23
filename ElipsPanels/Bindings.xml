@@ -1,0 +1,4 @@
+<Bindings>
+	<!-- The Rebuff List's buff key: each press casts the next buff on the list (out of combat). -->
+	<Binding name="CLICK ElipsPanelsBuffKey:LeftButton" category="ElipsPanels"/>
+</Bindings>

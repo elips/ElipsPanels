@@ -41,6 +41,14 @@ Two panels for a party or raid; each can be set to parties and raids, or raids o
 
 The game hides other players' mana and buffs from addons in a fight; the panels hand the hidden values straight to the game's own widgets, so the percents and colors still show.
 
+## Rebuff List
+
+Who in your group needs the buffs you can cast, with a click (or one key) to cast them. So far it knows a Druid's two, Mark of the Wild and Thorns; other classes' buffs can be added, and until then the list is there for Druids only. Inside a battleground it follows "Hide in battlegrounds" like the other panels (the buff key still works).
+
+- **Rebuff List (Thorns and Mark of the Wild)**: out of combat, in a group, a small list of who needs your buffs: missing, a lower rank than you can cast (yours or another druid's), or yours running out soon (a countdown, under 60 seconds by default). One row per player, with an icon for each buff they need: click to cast your highest rank of Mark, then Thorns once it lands; right-click casts Thorns straight away. The icons say which buffs, so the row's right side stays empty for a missing buff and only shows what the icons can't: the time left on one about to run out ("0:42") or a lower rank ("r4"). Hovering a row spells it out. It hides when nobody needs anything. Thorns is checked on tanks (group role or main tank), you, anyone wearing your Thorns or that you've buffed in this group, and anyone you pin with `/ep rebuff watch` (your target, or `/ep rebuff watch Name`; again to take them off); in a party with no tank, the whole party. Mark of the Wild is checked on everyone, you too; when 3 or more in your party or raid need it, one Gift of the Wild row takes their place, while you have Wild Thornroot. On WoW Forever a Gift lands on everyone in the raid, not one group of it, so there is one row for the whole raid and it's cast on you. The Gift row reads "5 need it"; when all of them already wear a Mark or Gift and it is only a lower rank than yours (another druid's Gift rank 1 under your rank 2, say), it reads "5 lower rank" in the lower-rank orange instead, and hovering it says how many have none, how many have a lower rank, which rank and whose. Tanks needing Thorns first, then Gift rows, then everyone else; up to 10 rows ("+N more" past that), dimmed when out of range. It hides in combat (the game doesn't let addon buttons change then) and comes back after. Drag it to move it; `/ep rebuff` turns it on or off (`/ep rebuff show`, `/ep rebuff hide`), `/ep rebuff test` shows a made-up party and `/ep rebuff test raid` a made-up 40-player raid, to place it and see how it looks. Settings on the Rebuff tab; the switch is on General. A Mark or Gift of the Wild is known by its name, so another Druid's counts whatever version it is; one with a spell ID the list has no rank for is taken as a full one (and listed in `/ep status`). In a battleground the game hides everyone's buffs the whole time, yours included, and other players' casts too. So there the list is about the buffs you gave: who they're on (your own casts; a Gift counts for everyone alive in the raid) and when they run out, plus what people had when buffs were last readable. Anyone nothing is known about is left off it, and dying puts a player back to not known: it won't say "40 need it" about a raid another Druid may have buffed. A Gift of the Wild on someone is measured against your own Gift, not against your Mark: it shows as a lower rank only when your Gift is a higher rank than theirs (the row then says "Gift r1"), so a raid under another Druid's Gift of the same rank needs nothing.
+- **Buff key**: one key for all your buffing (set it on the Rebuff tab, under Key Bindings > ElipsPanels, or with `/ep rebuff bind F`, any key, e.g. `SHIFT-B`; `/ep rebuff unbind` clears it). Each press, out of combat, casts the first buff of the list's marked row (the first one in range, marked with a soft wash and an edge on the left), and when the cast lands it moves on to the next one at once: Mark, then Thorns, then the next player. The key shows on the list's header. It works with the list turned off, does nothing in combat, and says so in chat when there's nothing to buff.
+- **Thorns warnings**: for the people who've worn your Thorns, a line in chat when it falls off ("Your Thorns fell off Morvessa."), when another druid's replaces it ("Leafy overwrote your Thorns on Morvessa."), and when someone wears a lower rank than you can cast ("Morvessa has Thorns rank 4. You can cast rank 6."). Once per change; the game hides buffs in combat, so what happens in a fight is told when it ends. In a group; a new zone starts watching afresh. Switch: "Thorns warnings in chat" on the Rebuff tab.
+
 ## All panels
 
 - **Fade away in a fight**: in combat the panels fade out, and come back while the mouse is over where they sit. It can be switched off.
@@ -57,11 +65,12 @@ The game hides other players' mana and buffs from addons in a fight; the panels 
 | `/ep info` | Shows or hides the information bar |
 | `/ep chase` | Opens the chase list window. `/ep chase add [item link]`, an item ID, a reputation's name, `quest 1234` or any goal adds to it (a note after " - "); `/ep chase show` and `/ep chase hide` for the panel on screen |
 | `/ep group test` | Both group panels with a made-up raid for a minute (`/ep group reset`: forget the cooldowns seen) |
+| `/ep rebuff` | Shows or hides the Rebuff List (`test`, `test raid`: a made-up group; `watch`: pin your target for Thorns; `bind KEY`, `unbind`: the buff key) |
 | `/ep status` | How each panel stands |
 
 ## Coming from ArchDruid
 
-These panels were part of ArchDruid. The first time each runs here, the settings it had in ArchDruid come along (and a line in chat says so).
+These panels were part of ArchDruid. The first time each runs here, the settings it had in ArchDruid come along (and a line in chat says so). The Rebuff List's buff key comes along too: the key you'd bound is bound to ElipsPanels' button the first time, with nothing to set again.
 
 ## Files
 
@@ -74,4 +83,6 @@ These panels were part of ArchDruid. The first time each runs here, the settings
 | `Info.lua` | The information bar |
 | `Chase.lua` | The chase list |
 | `Group.lua` | Group mana and raid cooldowns |
+| `Rebuff.lua` | The Rebuff List and its buff key |
+| `Bindings.xml` | The buff key's place under Key Bindings |
 | `Options.lua` | The settings window |

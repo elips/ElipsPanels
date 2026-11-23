@@ -57,6 +57,11 @@ ns.DEFAULTS = {
     quietPanels = true,
     -- No panel shows inside a battleground (/ep, General).
     hideInBattlegrounds = true,
+    -- The Rebuff List (Rebuff.lua): shown, its countdown (your buff with less
+    -- than this many seconds left is listed again), whether you're checked
+    -- for Thorns, Mark of the Wild (and Gift) on the list too, and the lines
+    -- in chat when your Thorns falls off someone. pos once it's been moved.
+    rebuff = { show = true, locked = false, soon = 60, includeSelf = true, markToo = true, alerts = true },
     -- The information bar (Info.lua): shown, its text size, what's on it
     -- (items[key] = false for a piece taken off), the currencies ticked.
     info = { show = true, size = 12, items = {}, currencies = {} },
@@ -619,7 +624,7 @@ SlashCmdList["ELIPSPANELS"] = function(message)
     elseif ns.commands[command] then
         ns.commands[command](rest)
     elseif command == "help" or command == "?" then
-        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep status: how each panel stands.")
+        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep rebuff: the Rebuff List. /ep status: how each panel stands.")
     else
         ns.ToggleOptions()
     end

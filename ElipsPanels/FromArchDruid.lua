@@ -53,6 +53,23 @@ ns.CARRY = {
         end
         return true
     end, "group panel" },
+    -- (The Rebuff List's settings sat with ArchDruid's Thorns settings.)
+    { "rebuff", function(old, db)
+        local list = old.thornsList
+        if type(list) ~= "table" then
+            return false
+        end
+        db.rebuff = type(db.rebuff) == "table" and db.rebuff or {}
+        for _, key in ipairs({ "show", "locked", "soon", "includeSelf", "markToo", "alerts", "pos" }) do
+            if list[key] ~= nil then
+                db.rebuff[key] = Copy(list[key])
+            end
+        end
+        if type(old.modules) == "table" and old.modules.thorns == false then
+            db.rebuff.show = false   -- (it was switched off there as a whole)
+        end
+        return true
+    end, "Rebuff List" },
     { "quiet", function(old, db)
         if type(old.quietPanels) ~= "boolean" then
             return false
@@ -89,3 +106,33 @@ function ns.Migrate()
     local what = #words == 1 and words[1] or (table.concat(words, ", ", 1, #words - 1) .. " and " .. words[#words])
     return "your " .. what .. " settings came over from ArchDruid."
 end
+
+-- The Rebuff List's buff key was bound to a button of ArchDruid's. Bound to
+-- ElipsPanels' button instead, once: nothing to press twice. Returns the
+-- key that came over, or nil.
+local OLD_BUFF_KEY = "CLICK ArchDruidBuffKey:LeftButton"
+function ns.CarryBuffKey(binding, buttonName)
+    local db = ns.db
+    if type(db.carried) ~= "table" then
+        db.carried = {}
+    end
+    if db.carried.rebuffKey or InCombatLockdown() then
+        return nil   -- (in a fight keys can't change: next time)
+    end
+    local get, setClick = rawget(_G, "GetBindingKey"), rawget(_G, "SetBindingClick")
+    if not (get and setClick) then
+        return nil
+    end
+    db.carried.rebuffKey = true
+    local old = get(OLD_BUFF_KEY)
+    if not old or get(binding) then
+        return nil   -- none there, or one already here
+    end
+    setClick(old, buttonName, "LeftButton")
+    local save, set = rawget(_G, "SaveBindings"), rawget(_G, "GetCurrentBindingSet")
+    if save then
+        pcall(save, set and set() or 1)
+    end
+    return old
+end
+

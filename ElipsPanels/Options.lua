@@ -42,7 +42,7 @@ local function Show(key)
 end
 
 local function Build()
-    window = K.Window("ElipsPanelsOptions", "ElipsPanels", 470, 400)
+    window = K.Window("ElipsPanelsOptions", "ElipsPanels", 530, 440)
     local x = 14
     for _, tab in ipairs(tabs) do
         local width = 26 + #tab.title * 7
@@ -292,3 +292,111 @@ ns.AddTab("cooldowns", "Cooldowns", function(page, x, y)
         ns.GroupCommand("reset")
     end, "Every cooldown counts as ready again (same as /ep group reset).")
 end)
+
+------------------------------------------------------------------------------
+-- Rebuff List
+------------------------------------------------------------------------------
+
+if ns.rebuffClass then
+    ns.panelSwitches[#ns.panelSwitches + 1] = { "Rebuff List",
+        function() return ns.db.rebuff.show ~= false end,
+        function(checked)
+            ns.db.rebuff.show = checked
+            ns.UpdateRebuffList()
+        end,
+        "Out of combat in a group: who needs the buffs you can cast, one row per player, a click to cast. Same as /ep rebuff. The buff key works with the list hidden." }
+end
+
+ns.AddTab("rebuff", "Rebuff", function(page, x, y)
+    if not ns.rebuffClass then
+        K.Para(page, "The Rebuff List shows who in your group needs the buffs you can cast, with a click (or one key) to cast them. So far it knows a Druid's: Mark of the Wild and Thorns. There's nothing for this class yet.", x, y, 480)
+        return
+    end
+    ns.db.rebuff = type(ns.db.rebuff) == "table" and ns.db.rebuff or {}
+    local list = ns.db.rebuff
+    local function Refresh()
+        ns.UpdateRebuffList()
+    end
+    y = K.Para(page, "Out of combat in a group: who needs Mark of the Wild or Thorns, one row per player. Left-click casts Mark, then Thorns; right-click casts Thorns first. Hidden in combat; drag it to move it. Switch it on or off on the General tab.", x, y, 480)
+    y = y - 2
+    K.Check(page, "Mark of the Wild too", x, y,
+        function() return list.markToo ~= false end,
+        function(checked) list.markToo = checked Refresh() end,
+        "Everyone, you included, checked for Mark or Gift of the Wild. 3 or more in your party or raid needing it: one Gift of the Wild row for everyone (while you have Wild Thornroot); a Gift lands on the whole raid. Thorns is checked on tanks, you, anyone wearing yours and anyone you pin (/ep rebuff watch); in a party with no tank, on everyone.")
+    y = y - 24
+    K.Check(page, "Thorns on yourself too", x, y,
+        function() return list.includeSelf ~= false end,
+        function(checked) list.includeSelf = checked Refresh() end)
+    y = y - 24
+    K.Check(page, "Thorns warnings in chat", x, y,
+        function() return list.alerts ~= false end,
+        function(checked) list.alerts = checked end,
+        "For the people who've worn your Thorns: \"Your Thorns fell off Morvessa.\", \"Leafy overwrote your Thorns on Morvessa.\", \"Morvessa has Thorns rank 4. You can cast rank 6.\" Once per change; what happens in a fight is told when it ends (the game hides buffs in combat). In a group.")
+    y = y - 24
+    K.Check(page, "Lock it in place", x, y,
+        function() return list.locked == true end,
+        function(checked) list.locked = checked end)
+    y = y - 28
+    K.Stepper(page, "List buffs with less than", x, y,
+        function() return list.soon or 60 end,
+        function(value) list.soon = value Refresh() end, 15, 15, 300,
+        function(value) return string.format("%d sec", value) end,
+        "A buff this close to running out is listed again, so you can refresh it before the pull.")
+    y = y - 34
+    K.Button(page, "Test: party", 110, x, y, function()
+        ns.RebuffTest(false)
+    end, "The list for a made-up party, for 30 seconds (clicks don't cast). Same as /ep rebuff test.")
+    K.Button(page, "Test: 40-player raid", 160, x + 118, y, function()
+        ns.RebuffTest(true)
+    end, "The list for a made-up 40-player raid, for 30 seconds: Thorns on the tanks and whoever wears yours, Gift of the Wild for the raid groups that need Mark. Same as /ep rebuff test raid.")
+    y = y - 38
+    K.Header(page, "Buff key", x, y)
+    y = y - 22
+    y = K.Para(page, "One key that casts the list's next buff each time you press it. Out of combat only; works with the list hidden. Also under Key Bindings > ElipsPanels.", x, y, 480)
+    local keyLabel = page.body:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    keyLabel:SetPoint("TOPLEFT", x, y - 6)
+    local function ShowKey()
+        local key = ns.BuffKeyText()
+        keyLabel:SetText("Key: " .. (key and ("|cffffd100" .. key .. "|r") or "|cff999999none|r"))
+    end
+    ShowKey()
+    local setKey
+    setKey = K.Button(page, "Set key", 110, x + 150, y, function()
+        if InCombatLockdown() then
+            ns.Print("keys can't be changed in combat.")
+            return
+        end
+        setKey.label:SetText("Press a key...")
+        local catcher = setKey.catcher
+        if not catcher then
+            catcher = CreateFrame("Frame", nil, setKey)
+            catcher:SetAllPoints(UIParent)
+            catcher:SetFrameStrata("DIALOG")
+            catcher:EnableMouse(false)
+            setKey.catcher = catcher
+            local modifiers = { LSHIFT = true, RSHIFT = true, LCTRL = true, RCTRL = true, LALT = true, RALT = true }
+            catcher:SetScript("OnKeyDown", function(self, key)
+                if modifiers[key] then
+                    return
+                end
+                self:EnableKeyboard(false)
+                self:Hide()
+                setKey.label:SetText("Set key")
+                if key ~= "ESCAPE" then
+                    local combo = (IsAltKeyDown() and "ALT-" or "") .. (IsControlKeyDown() and "CTRL-" or "")
+                        .. (IsShiftKeyDown() and "SHIFT-" or "") .. key
+                    ns.BindBuffKey(combo)
+                end
+                ShowKey()
+            end)
+        end
+        catcher:Show()
+        catcher:EnableKeyboard(true)
+    end, "Click, then press the key you want (with Shift, Ctrl or Alt if you like). Esc cancels.")
+    K.Button(page, "Clear", 70, x + 268, y, function()
+        ns.BindBuffKey(nil)
+        ShowKey()
+    end)
+    page.body:HookScript("OnShow", ShowKey)
+end)
+
