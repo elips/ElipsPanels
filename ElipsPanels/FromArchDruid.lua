@@ -27,6 +27,17 @@ ns.CARRY = {
         db.info = Copy(old.info)
         return true
     end, "information bar" },
+    -- (The lists themselves come along: every character's.)
+    { "chase", function(old, db)
+        if type(old.chase) ~= "table" then
+            return false
+        end
+        db.chase = Copy(old.chase)
+        if type(old.modules) == "table" and old.modules.chase == false then
+            db.chase.show = false   -- (it was switched off there as a whole)
+        end
+        return true
+    end, "chase list" },
     { "quiet", function(old, db)
         if type(old.quietPanels) ~= "boolean" then
             return false

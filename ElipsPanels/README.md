@@ -14,6 +14,15 @@ A thin bar, centered at the top of the screen to start with, with the things wor
 
 Right-click the bar and a list opens under it: tick what it shows. Shift-click it to start the per-hour counts again. Point at it for the details (realm time, both latencies, the addons using the most memory, what the session has earned). The text size is in the settings.
 
+## Chase list
+
+A list of things to go after, each with a short note on how to get it, so there's always something to do. Each character has its own list.
+
+- **What goes on it**: an item (by link, or its ID; done when you own it, or that many of it), a reputation (by name; done at Exalted), a quest (`quest 1234`; done when the game has it flagged complete), or a goal of your own (ticked off by hand).
+- **The list window** (`/ep chase`): add things, write how to get them, move them up and down, tick them off. Where one of the dungeon journal addons is installed, an item's note is filled in from its loot tables.
+- **The panel on screen**: the first few things still to get and how far along each is. It hides itself when there's nothing left. Click its header to fold it, right-click the header for the list window.
+- **Speaking up**: a line in chat and a notice on screen when an item on your list comes up for a roll or lies in a loot window, and "Chase complete" when one is done; items on the list are marked in their tooltips. Each can be switched off.
+
 ## All panels
 
 - **Fade away in a fight**: in combat the panels fade out, and come back while the mouse is over where they sit. It can be switched off.
@@ -27,6 +36,7 @@ Right-click the bar and a list opens under it: tick what it shows. Shift-click i
 | `/ep` (or `/elipspanels`) | Opens the settings |
 | `/ep move` | Shows or puts away the boxes for moving the panels |
 | `/ep info` | Shows or hides the information bar |
+| `/ep chase` | Opens the chase list window. `/ep chase add [item link]`, an item ID, a reputation's name, `quest 1234` or any goal adds to it (a note after " - "); `/ep chase show` and `/ep chase hide` for the panel on screen |
 | `/ep status` | How each panel stands |
 
 ## Coming from ArchDruid
@@ -41,4 +51,5 @@ These panels were part of ArchDruid. The first time each runs here, the settings
 | `Core.lua` | Settings, the panels' look, fading in a fight, moving, the slash command |
 | `FromArchDruid.lua` | Brings settings over from ArchDruid, once. The only file that knows of ArchDruid |
 | `Info.lua` | The information bar |
+| `Chase.lua` | The chase list |
 | `Options.lua` | The settings window |

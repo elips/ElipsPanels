@@ -135,3 +135,61 @@ ns.AddTab("info", "Information bar", function(page, x, y)
         end, 1, 9, 18,
         function(value) return string.format("%d", value) end)
 end)
+
+------------------------------------------------------------------------------
+-- Chase list
+------------------------------------------------------------------------------
+
+ns.panelSwitches[#ns.panelSwitches + 1] = { "Chase panel",
+    function() return ns.ChaseSettings().show ~= false end,
+    function(checked)
+        ns.ChaseSettings().show = checked
+        ns.RefreshChase()
+    end,
+    "A small panel with the first few things still to get from your chase list, and how far along each is. It hides itself when there's nothing left. Same as /ep chase show and /ep chase hide." }
+
+ns.AddTab("chase", "Chase list", function(page, x, y)
+    local chase = ns.ChaseSettings()
+    local function Apply()
+        ns.RefreshChase()
+    end
+    y = K.Para(page, "Things to go after, each with a note on how to get it: items (by link or ID), reputations (to Exalted), quests, and goals of your own. Items, reputations and quests tick themselves off; a goal you tick off yourself. Each character has its own list.", x, y, 430)
+    y = y - 4
+    K.Button(page, "Open the chase list", 150, x, y, function()
+        ns.ToggleChaseWindow(true)
+    end, "The list window: add things, write how to get them, move them up and down, tick them off. Same as /ep chase.")
+    y = y - 36
+    K.Header(page, "Panel on screen", x, y)
+    y = y - 24
+    K.Check(page, "Hide it in combat", x, y,
+        function() return chase.hideInCombat ~= false end,
+        function(checked) chase.hideInCombat = checked Apply() end,
+        "With \"Fade away in a fight\" on (General) it fades like the other panels instead, so the mouse can still find it.")
+    y = y - 24
+    K.Check(page, "Lock it in place", x, y,
+        function() return chase.locked == true end,
+        function(checked) chase.locked = checked end,
+        "On: dragging doesn't move it.")
+    y = y - 28
+    K.Stepper(page, "Rows shown", x, y,
+        function() return chase.rows or 6 end,
+        function(value) chase.rows = value Apply() end, 1, 3, 12,
+        function(value) return string.format("%d", value) end,
+        "How many of the things still to get the panel lists; the rest are counted under them.")
+    y = y - 34
+    K.Header(page, "Speaking up", x, y)
+    y = y - 24
+    K.Check(page, "Tell me when something on the list drops or is done", x, y,
+        function() return chase.alerts ~= false end,
+        function(checked) chase.alerts = checked end,
+        "A line in chat and a notice on screen when an item on your list comes up for a roll or lies in a loot window, and \"Chase complete\" when you get an item, reach the standing or finish the quest.")
+    y = y - 24
+    K.Check(page, "With a sound", x, y,
+        function() return chase.sound ~= false end,
+        function(checked) chase.sound = checked end)
+    y = y - 24
+    K.Check(page, "Mark items on the list in their tooltips", x, y,
+        function() return chase.tooltip ~= false end,
+        function(checked) chase.tooltip = checked end,
+        "An item's tooltip says \"On your chase list\", with your note on how to get it.")
+end)

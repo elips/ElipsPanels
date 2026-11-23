@@ -1,8 +1,8 @@
 ## Interface: 16001
 ## Title: ElipsPanels
-## Notes: The suite's small panels in one addon, each shown or hidden as you like: the information bar (time, latency, FPS, gold and XP per hour, durability, bags, currencies).
+## Notes: The suite's small panels in one addon, each shown or hidden as you like: the information bar (time, latency, FPS, gold and XP per hour, durability, bags, currencies) and the chase list (things to go after, with how to get each).
 ## Author: elips
-## Version: 1.0.0
+## Version: 1.1.0
 ## OptionalDeps: ElipsUI
 ## Category: Interface
 ## IconTexture: Interface\AddOns\ElipsPanels\Media\ElipsPanels
@@ -12,4 +12,5 @@ Kit.lua
 Core.lua
 FromArchDruid.lua
 Info.lua
+Chase.lua
 Options.lua

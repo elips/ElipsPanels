@@ -4,6 +4,9 @@
 --   Information bar   the time, latency, frames per second, gold and
 --                     experience per hour, addon CPU and memory,
 --                     durability, bag space and currencies (Info.lua)
+--   Chase list        things to go after (items, reputations, quests,
+--                     goals of your own), each with a note on how to get
+--                     it (Chase.lua)
 --
 -- This file: the settings, the few helpers the panels share (the panels'
 -- look, fading away in a fight, moving them), and the slash command.
@@ -52,6 +55,10 @@ ns.DEFAULTS = {
     -- The information bar (Info.lua): shown, its text size, what's on it
     -- (items[key] = false for a piece taken off), the currencies ticked.
     info = { show = true, size = 12, items = {}, currencies = {} },
+    -- The chase list (Chase.lua): things to go after, kept per character in
+    -- `lists`; the panel on screen (`show`, `hideInCombat`, `rows`), and
+    -- whether it speaks up (`alerts`, `sound`, `tooltip`).
+    chase = { show = true, hideInCombat = true, rows = 6, alerts = true, sound = true, tooltip = true },
 }
 
 function ns.ModuleOn(key)
@@ -296,6 +303,53 @@ function W.PlacePanel(frame, pos, default, center)
 end
 
 ------------------------------------------------------------------------------
+-- A window, buttons and a box to type in, for a panel that has a window
+------------------------------------------------------------------------------
+
+W.TITLE_HEIGHT = 34   -- a window's title and the rule under it, from its top edge
+
+function W.Window(name, title, width, height)
+    return K.Window(name, title, width, height)
+end
+
+-- A button (not placed: the caller sets its point). button:SetText changes
+-- what it says.
+function W.Button(parent, text, width, onClick, height)
+    local button = K.Button({ body = parent }, text, width, 0, 0, onClick)
+    button:ClearAllPoints()
+    if height then
+        button:SetHeight(height)
+    end
+    function button:SetText(newText)
+        self.label:SetText(newText)
+    end
+    return button
+end
+
+-- A box to type in: `hintText` shows in grey while it's empty.
+function W.TextBox(parent, name, hintText, width)
+    local box = CreateFrame("EditBox", name, parent)
+    box:SetSize(width or 200, 22)
+    box:SetAutoFocus(false)
+    box:SetFontObject(rawget(_G, "GameFontHighlightSmall") or "GameFontHighlightSmall")
+    box:SetTextInsets(7, 6, 0, 0)
+    local look = K.Rounded(box, 6)
+    look:Fill(0.045, 0.039, 0.032, 1)
+    look:Edge(K.EDGE_DIM[1], K.EDGE_DIM[2], K.EDGE_DIM[3], 1)
+    local hint = box:CreateFontString(nil, "ARTWORK", "GameFontDisableSmall")
+    hint:SetPoint("LEFT", 7, 0)
+    hint:SetText(hintText or "")
+    box.hint = hint
+    box:HookScript("OnTextChanged", function(self)
+        hint:SetShown((self:GetText() or "") == "")
+    end)
+    -- (Brighter while you type in it.)
+    box:HookScript("OnEditFocusGained", function() look:Edge(K.EDGE_LIT[1], K.EDGE_LIT[2], K.EDGE_LIT[3], 1) end)
+    box:HookScript("OnEditFocusLost", function() look:Edge(K.EDGE_DIM[1], K.EDGE_DIM[2], K.EDGE_DIM[3], 1) end)
+    return box
+end
+
+------------------------------------------------------------------------------
 -- Moving the panels
 ------------------------------------------------------------------------------
 -- /ep move puts a blue box where each panel sits (shown or not): drag one
@@ -487,7 +541,7 @@ SlashCmdList["ELIPSPANELS"] = function(message)
     elseif ns.commands[command] then
         ns.commands[command](rest)
     elseif command == "help" or command == "?" then
-        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep status: how each panel stands.")
+        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep status: how each panel stands.")
     else
         ns.ToggleOptions()
     end
