@@ -61,6 +61,39 @@ In a fight, on a target you can attack, your threat on it shows above the target
 
 The panel isn't moved with the others: it sits on the target frame and goes where that goes. It follows "Hide in battlegrounds".
 
+## Leveling panel
+
+A small panel of numbers for the session, the kind the "XP per hour" WeakAuras show. It uses the information bar's session, which starts when you log in.
+
+While you level:
+
+| Row | What it says |
+|---|---|
+| Level 23, 62.4% | Your level and how far through it you are (the panel's title) |
+| XP per hour | This session |
+| Time to level | At that rate |
+| This level | Time played at this level |
+| XP per kill | The average of your last 10 kills (a quest's XP isn't a kill) |
+| Kills to level | At that average |
+| XP to go | |
+| Rested | Your rested XP, as a share of a level |
+
+At the level cap it shows gold instead:
+
+| Row | What it says |
+|---|---|
+| Gold per hour | Coin gained and, with Auctionator, what the loot is worth: the information bar's figure |
+| Earned | The same, in all |
+| Coin | What your purse has gained |
+| Loot | What you've looted is worth, and how many items (with Auctionator) |
+| Session | How long it has been running |
+| Purse | What you have |
+
+- **Show** (Leveling tab): Automatic (leveling until the cap, gold from then on), Gold always, or Leveling only (nothing at the cap). Each row can be unticked there.
+- **New session** (the same tab, or `/ep leveling reset`): XP per hour, gold per hour, the loot tally and the kills start again, on the information bar too.
+- **Time at this level** is counted by the panel from then on (only while you're logged in, as the game counts it). The first time, for each character, and after leveling with the addon off, the game is asked for it once, which also prints its /played lines in chat. `/ep leveling played` asks again; typing `/played` yourself does the same.
+- `/ep move` moves it; `/ep leveling` shows or hides it (`show`, `hide`); the switch is on General. It hides in battlegrounds with the other panels, but it doesn't fade in a fight the way most do: leveling is fighting.
+
 ## All panels
 
 - **Fade away in a fight**: in combat the panels fade out, and come back while the mouse is over where they sit. It can be switched off.
@@ -79,6 +112,7 @@ The panel isn't moved with the others: it sits on the target frame and goes wher
 | `/ep group test` | Both group panels with a made-up raid for a minute (`/ep group reset`: forget the cooldowns seen) |
 | `/ep rebuff` | Shows or hides the Rebuff List (`test`, `test raid`: a made-up group; `watch`: pin your target for Thorns; `bind KEY`, `unbind`: the buff key) |
 | `/ep threat` | Shows or hides the threat panel |
+| `/ep leveling` | Shows or hides the leveling panel (`reset`: a new session; `played`: ask the game again for the time at this level) |
 | `/ep status` | How each panel stands |
 
 ## Coming from ArchDruid
@@ -98,5 +132,6 @@ These panels were part of ArchDruid. The first time each runs here, the settings
 | `Group.lua` | Group mana and raid cooldowns |
 | `Rebuff.lua` | The Rebuff List and its buff key |
 | `Threat.lua` | The threat panel above the target frame |
+| `Leveling.lua` | The leveling panel (and its gold figures at the level cap) |
 | `Bindings.xml` | The buff key's place under Key Bindings |
 | `Options.lua` | The settings window |

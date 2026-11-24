@@ -616,6 +616,9 @@ function ns.InfoRestart()
     session.money = MoneyNow() or 0
     session.xp = 0
     ns.LootTallyRestart()
+    if ns.LevelingRestart then
+        ns.LevelingRestart()
+    end
     if panel and panel:IsShown() then
         Tick()
     end
@@ -982,6 +985,19 @@ function ns.InfoDiagLines()
             durability and string.format("%.0f%%", durability) or "not read", tostring(freeSlots)),
     }
 end
+
+-- The session, for the other panels that count by it (the leveling panel).
+ns.Session = {
+    Elapsed = Elapsed,
+    PerHour = PerHour,                                  -- an amount this session, as a rate per hour (nil: too soon to say)
+    XP = function() return session.xp end,
+    Money = MoneyNow,
+    MoneyGained = function()
+        local money = MoneyNow()
+        return money and (money - session.money) or nil
+    end,
+    AtLevelCap = AtLevelCap,
+}
 
 ns.InfoInternals = {
     Panel = function() return panel end,

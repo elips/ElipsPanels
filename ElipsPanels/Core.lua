@@ -61,6 +61,11 @@ ns.DEFAULTS = {
     -- of threat and damage per second, and whether your threat is colored
     -- as a tank's ("tank"), as anyone else's ("other"), or worked out ("auto").
     threat = { show = true, tps = true, as = "auto" },
+    -- The leveling panel (Leveling.lua). what: "auto" (leveling numbers, gold
+    -- ones at the level cap), "gold" (always gold) or "level" (leveling
+    -- only). rows[key] = false hides a row; chars holds each character's
+    -- time at its level.
+    leveling = { show = true, what = "auto" },
     -- The Rebuff List (Rebuff.lua): shown, its countdown (your buff with less
     -- than this many seconds left is listed again), whether you're checked
     -- for Thorns, Mark of the Wild (and Gift) on the list too, and the lines
@@ -221,7 +226,8 @@ end
 -- clear for the fight and anything is still a glance away. Out of combat
 -- they're as they were. Faded, not hidden: a hidden frame can't be pointed
 -- at. Setting: db.quietPanels (on unless switched off; /ep, General).
--- The group mana panel isn't registered: it's for the fight.
+-- The group mana panel isn't registered: it's for the fight. Nor is the
+-- leveling panel: leveling is fighting.
 local quiet = {}             -- frame -> { also = fn giving a second frame that goes with it, alpha, keep }
 local QUIET_FADE = 0.15      -- seconds to fade out or in
 local QUIET_HOLD = 0.4       -- seconds a panel stays after the mouse leaves it
@@ -628,7 +634,7 @@ SlashCmdList["ELIPSPANELS"] = function(message)
     elseif ns.commands[command] then
         ns.commands[command](rest)
     elseif command == "help" or command == "?" then
-        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep rebuff: the Rebuff List. /ep threat: show or hide the threat panel. /ep status: how each panel stands.")
+        K.Print("/ep: settings. /ep move: move the panels. /ep info: show or hide the information bar. /ep chase: the chase list. /ep group test: a made-up raid for the group panels. /ep rebuff: the Rebuff List. /ep threat: show or hide the threat panel. /ep leveling: show or hide the leveling panel. /ep status: how each panel stands.")
     else
         ns.ToggleOptions()
     end

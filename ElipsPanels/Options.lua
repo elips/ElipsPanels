@@ -42,7 +42,7 @@ local function Show(key)
 end
 
 local function Build()
-    window = K.Window("ElipsPanelsOptions", "ElipsPanels", 600, 440)
+    window = K.Window("ElipsPanelsOptions", "ElipsPanels", 680, 440)
     local x = 14
     for _, tab in ipairs(tabs) do
         local width = 26 + #tab.title * 7
@@ -430,3 +430,57 @@ ns.AddTab("threat", "Threat", function(page, x, y)
         "A line above your threat: threat per second on the target (last 15 seconds, without what a taunt hands you) and damage per second (from the game's damage meter, when it can be read in combat). A Druid's shows in Cat and Bear Form only.")
 end)
 
+------------------------------------------------------------------------------
+-- Leveling panel
+------------------------------------------------------------------------------
+
+ns.panelSwitches[#ns.panelSwitches + 1] = { "Leveling panel",
+    function() return ns.db.leveling.show ~= false end,
+    function(checked)
+        ns.db.leveling.show = checked
+        ns.UpdateLeveling()
+    end,
+    "A small panel of leveling numbers (XP per hour, time to level, XP per kill and so on); at the level cap, the same for gold. Same as /ep leveling." }
+
+local LEVELING_WHAT = {
+    { "auto", "Automatic" },
+    { "gold", "Gold always" },
+    { "level", "Leveling only" },
+}
+
+ns.AddTab("leveling", "Leveling", function(page, x, y)
+    local leveling = ns.LevelingSettings()
+    y = K.Para(page, "A small panel of numbers for the session (the information bar's session: it starts when you log in). While you level: XP per hour, the time to the next level at that rate, the time played at this level, XP per kill (over your last 10 kills) and the kills left at that, XP to go, and your rested XP. At the level cap it shows gold instead: gold per hour, what the session has earned, coin, loot (with Auctionator) and your purse. /ep move moves it; the switch is on General.", x, y, 620)
+    y = y - 4
+    Choice(page, "Show", x, y, LEVELING_WHAT,
+        function() return leveling.what or "auto" end,
+        function(value) leveling.what = value ns.UpdateLeveling() end,
+        "Automatic: the leveling numbers until the level cap, the gold ones from then on. Gold always: the gold numbers while leveling too. Leveling only: nothing at the cap.")
+    y = y - 36
+    K.Header(page, "Leveling rows", x, y)
+    K.Header(page, "Gold rows", x + 320, y)
+    y = y - 22
+    local function Rows(list, left, top)
+        for index, row in ipairs(list) do
+            K.Check(page, row.label, left + ((index - 1) % 2) * 150, top - math.floor((index - 1) / 2) * 24,
+                function() return leveling.rows[row.key] ~= false end,
+                function(checked)
+                    if checked then
+                        leveling.rows[row.key] = nil
+                    else
+                        leveling.rows[row.key] = false
+                    end
+                    ns.UpdateLeveling()
+                end)
+        end
+    end
+    Rows(ns.LEVELING_ROWS, x, y)
+    Rows(ns.LEVELING_GOLD_ROWS, x + 320, y)
+    y = y - math.ceil(#ns.LEVELING_ROWS / 2) * 24 - 10
+    K.Button(page, "New session", 110, x, y, function()
+        ns.InfoRestart()
+        ns.UpdateLeveling()
+    end, "Starts the session again: XP per hour, gold per hour, the loot tally and the kills. (The information bar's figures start again with it.)")
+    y = y - 34
+    K.Para(page, "The time at this level is counted by the panel from now on. The first time, for each character, the game is asked for it once, and prints its /played lines in chat as it answers.", x, y, 620)
+end)
