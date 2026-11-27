@@ -2,6 +2,8 @@
 
 The suite's small panels in one addon, for any class in WoW: Forever. Each panel can be shown or hidden by itself (`/ep`, General). More panels will move in here over time.
 
+With ElipsUI installed and a class HUD (ArchDruid, WarLord) wearing a theme, the panels and the settings window wear it too: a soft glow of its color along the top, and its color on what's lit, selected or ticked in the settings. Without them, the bronze look.
+
 ## Information bar
 
 A thin bar, centered at the top of the screen to start with, with the things worth a glance:
