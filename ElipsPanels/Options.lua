@@ -322,7 +322,7 @@ ns.AddTab("rebuff", "Rebuff", function(page, x, y)
     K.Check(page, "Mark of the Wild too", x, y,
         function() return list.markToo ~= false end,
         function(checked) list.markToo = checked Refresh() end,
-        "Everyone, you included, checked for Mark or Gift of the Wild. 3 or more in your party or raid needing it: one Gift of the Wild row for everyone (while you have Wild Thornroot); a Gift lands on the whole raid. Thorns is checked on tanks, you, anyone wearing yours and anyone you pin (/ep rebuff watch); in a party with no tank, on everyone.")
+        "Everyone, you included, checked for Mark or Gift of the Wild. 3 or more in your party or raid needing it: one Gift of the Wild row for everyone (while you have Wild Thornroot); a Gift lands on the whole raid. Thorns is checked on tanks, you, anyone wearing yours and anyone you pin (/ep rebuff watch), in a party as in a raid.")
     y = y - 24
     K.Check(page, "Thorns on yourself too", x, y,
         function() return list.includeSelf ~= false end,

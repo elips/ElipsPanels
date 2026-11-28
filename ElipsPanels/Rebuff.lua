@@ -26,8 +26,8 @@ end
 -- row to cast it.
 --
 -- Thorns: tanks (group role or main tank), you, anyone you've put Thorns on
--- in this group, and anyone you pin (`/ep rebuff watch`); in a party with no
--- tank, the whole party. A row when it's missing, a
+-- in this group, and anyone you pin (`/ep rebuff watch`), in a party as in a
+-- raid. A row when it's missing, a
 -- lower rank than you can cast (yours or another druid's), or yours runs out
 -- soon (a countdown).
 --
@@ -749,22 +749,8 @@ local function Rows(roster, raid, test)
                 checked[#checked + 1] = who
             end
         end
-        -- A party with no tank: everyone (buffing one of them doesn't narrow
-        -- it down to just that one).
-        local tanks = 0
-        for _, who in ipairs(roster) do
-            if who.tank and not who.you then
-                tanks = tanks + 1
-            end
-        end
-        if tanks == 0 and not raid then
-            checked = {}
-            for _, who in ipairs(roster) do
-                if not who.you or settings.includeSelf ~= false then
-                    checked[#checked + 1] = who
-                end
-            end
-        end
+        -- (In a party too, only the tanks and the rest above: until 1.9.0 a
+        -- party with no tank marked had everyone checked.)
         listStatus.checked = #checked
         for _, who in ipairs(checked) do
             local reason, order = Need(who.thorns, thornsRank, soon)
